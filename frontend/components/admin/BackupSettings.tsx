@@ -8,7 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { NativeSelect } from "@/components/ui/native-select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -231,30 +238,42 @@ export function BackupSettings() {
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
               <Label htmlFor="backup-frequency">Frequency</Label>
-              <NativeSelect
-                id="backup-frequency"
+              <Select
                 value={form.frequency}
                 disabled={!form.enabled}
-                onChange={(e) => setForm({ ...form, frequency: e.target.value as ScheduleForm["frequency"] })}
+                onValueChange={(v) => v && setForm({ ...form, frequency: v as ScheduleForm["frequency"] })}
               >
-                <option value="daily">Every day</option>
-                <option value="weekly">Every week</option>
-              </NativeSelect>
+                <SelectTrigger id="backup-frequency" className="w-full">
+                  <SelectValue>{(v: string) => (v === "weekly" ? "Every week" : "Every day")}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="daily">Every day</SelectItem>
+                    <SelectItem value="weekly">Every week</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="backup-hour">Time</Label>
-              <NativeSelect
-                id="backup-hour"
+              <Select
                 value={form.hour}
                 disabled={!form.enabled}
-                onChange={(e) => setForm({ ...form, hour: e.target.value })}
+                onValueChange={(v) => v && setForm({ ...form, hour: v })}
               >
-                {Array.from({ length: 24 }, (_, h) => (
-                  <option key={h} value={h}>
-                    {hourLabel(h)}
-                  </option>
-                ))}
-              </NativeSelect>
+                <SelectTrigger id="backup-hour" className="w-full">
+                  <SelectValue>{(v: string) => hourLabel(Number(v))}</SelectValue>
+                </SelectTrigger>
+                <SelectContent className="max-h-72">
+                  <SelectGroup>
+                    {Array.from({ length: 24 }, (_, h) => (
+                      <SelectItem key={h} value={String(h)}>
+                        {hourLabel(h)}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="backup-retention">Keep last</Label>
